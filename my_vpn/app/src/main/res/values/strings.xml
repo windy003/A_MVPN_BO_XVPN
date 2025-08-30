@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Simple VPN</string>
+    <string name="connect">连接</string>
+    <string name="disconnect">断开</string>
+    <string name="paste_subscription">粘贴链接</string>
+    <string name="status_disconnected">未连接</string>
+    <string name="status_connecting">连接中</string>
+    <string name="status_connected">已连接</string>
+    <string name="no_subscription">未找到订阅链接</string>
+    <string name="invalid_subscription">无效的订阅链接</string>
+    <string name="vpn_service_running">VPN服务运行中</string>
+</resources>

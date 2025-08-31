@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.myvpn.simple.xray.XrayConfig;
 import com.myvpn.simple.xray.TrojanSettings;
+import com.myvpn.simple.ui.AppExclusionManager;
 import cn.gov.xivpn2.LibXivpn;
 import cn.gov.xivpn2.service.XiVPNService;
 import java.io.IOException;
@@ -44,6 +45,7 @@ public class SimpleVPNService extends XiVPNService {
     private TrojanConfig currentConfig;
     private final IBinder binder = new VPNBinder();
     private final Set<VPNStatusListener> listeners = new HashSet<>();
+    private AppExclusionManager appExclusionManager;
     
     public interface VPNStatusListener {
         void onStatusChanged(Status status);
@@ -74,12 +76,17 @@ public class SimpleVPNService extends XiVPNService {
         public void disconnect() {
             stopVPN();
         }
+        
+        public AppExclusionManager getAppExclusionManager() {
+            return appExclusionManager;
+        }
     }
     
     @Override
     public void onCreate() {
         super.onCreate();
         createNotificationChannel();
+        appExclusionManager = new AppExclusionManager(this);
     }
     
     @Override
@@ -180,6 +187,9 @@ public class SimpleVPNService extends XiVPNService {
             builder.addDnsServer("8.8.8.8");
             builder.addDnsServer("8.8.4.4");
             
+            // 应用排除配置
+            configureAppExclusion(builder);
+            
             try {
                 String appName = getPackageManager().getApplicationLabel(getApplicationInfo()).toString();
                 builder.setSession(appName);
@@ -198,6 +208,40 @@ public class SimpleVPNService extends XiVPNService {
         } catch (Exception e) {
             Log.e(TAG, "Failed to establish VPN", e);
             return false;
+        }
+    }
+    
+    private void configureAppExclusion(Builder builder) {
+        if (appExclusionManager == null) {
+            return;
+        }
+        
+        Set<String> excludedApps = appExclusionManager.getExcludedApps();
+        AppExclusionManager.ExclusionMode mode = appExclusionManager.getExclusionMode();
+        
+        Log.i(TAG, "配置应用排除 - 模式: " + mode + ", 应用数量: " + excludedApps.size());
+        
+        for (String packageName : excludedApps) {
+            try {
+                if (packageName.equals(getPackageName())) {
+                    Log.w(TAG, "跳过本应用包: " + packageName);
+                    continue;
+                }
+                
+                if (mode == AppExclusionManager.ExclusionMode.BLACKLIST) {
+                    // 排除模式：列表中的应用不走代理
+                    builder.addDisallowedApplication(packageName);
+                    Log.i(TAG, "排除应用: " + packageName);
+                } else {
+                    // 允许模式：只有列表中的应用走代理
+                    builder.addAllowedApplication(packageName);
+                    Log.i(TAG, "允许应用: " + packageName);
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.w(TAG, "应用包不存在: " + packageName);
+            } catch (Exception e) {
+                Log.e(TAG, "配置应用排除失败: " + packageName, e);
+            }
         }
     }
     

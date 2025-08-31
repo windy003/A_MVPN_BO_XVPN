@@ -37,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="8dp">
 
         <Button
             android:id="@+id/btn_paste_subscription"
@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/paste_subscription"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="4dp" />
 
         <Button
             android:id="@+id/btn_manage_nodes"
@@ -53,9 +53,16 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="节点管理"
-            android:layout_marginStart="8dp" />
+            android:layout_marginStart="4dp" />
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_app_exclusion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="应用排除设置"
+        android:layout_marginBottom="16dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_connect"

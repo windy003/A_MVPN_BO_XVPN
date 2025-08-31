@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.myvpn.simple.database.NodeDatabase;
 import com.myvpn.simple.database.TrojanNode;
 import com.myvpn.simple.database.TrojanNodeDao;
+import com.myvpn.simple.ui.AppExclusionActivity;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvServerInfo;
     private Button btnPasteSubscription;
     private Button btnManageNodes;
+    private Button btnAppExclusion;
     private Button btnConnect;
     
     private SimpleVPNService.VPNBinder vpnBinder;
@@ -77,10 +79,12 @@ public class MainActivity extends AppCompatActivity {
         tvServerInfo = findViewById(R.id.tv_server_info);
         btnPasteSubscription = findViewById(R.id.btn_paste_subscription);
         btnManageNodes = findViewById(R.id.btn_manage_nodes);
+        btnAppExclusion = findViewById(R.id.btn_app_exclusion);
         btnConnect = findViewById(R.id.btn_connect);
         
         btnPasteSubscription.setOnClickListener(v -> pasteSubscription());
         btnManageNodes.setOnClickListener(v -> openNodeManager());
+        btnAppExclusion.setOnClickListener(v -> openAppExclusion());
         btnConnect.setOnClickListener(v -> toggleVPN());
     }
     
@@ -109,6 +113,11 @@ public class MainActivity extends AppCompatActivity {
     private void openNodeManager() {
         Intent intent = new Intent(this, NodesActivity.class);
         startActivityForResult(intent, NODES_REQUEST_CODE);
+    }
+    
+    private void openAppExclusion() {
+        Intent intent = new Intent(this, AppExclusionActivity.class);
+        startActivity(intent);
     }
     
     private void bindVPNService() {

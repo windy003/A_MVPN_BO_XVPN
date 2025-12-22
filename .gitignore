@@ -1,10 +1,5 @@
 .claude
-.idea
-my_vpn/.gradle
-my_vpn/.idea
-my_vpn/app/build
-my_vpn/build
-A_xivpn/app/build
-A_xivpn/.gradle
-A_xivpn/.idea
-A_xivpn/.github/
+kt/.gradle
+kt/.idea
+kt/app/build
+kt/build

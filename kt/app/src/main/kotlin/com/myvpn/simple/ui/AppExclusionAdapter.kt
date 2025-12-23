@@ -1,5 +1,6 @@
 package com.myvpn.simple.ui
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.myvpn.simple.R
 
 class AppExclusionAdapter : RecyclerView.Adapter<AppExclusionAdapter.ViewHolder>() {
+
+    companion object {
+        private const val TAG = "AppExclusionAdapter"
+    }
 
     fun interface OnAppExclusionChangeListener {
         fun onAppExclusionChanged(packageName: String, isExcluded: Boolean)
@@ -34,11 +39,16 @@ class AppExclusionAdapter : RecyclerView.Adapter<AppExclusionAdapter.ViewHolder>
     }
 
     fun setSearchQuery(query: String) {
-        searchQuery = query.lowercase()
-        applyFilter()
+        val newQuery = query.lowercase().trim()
+        Log.d(TAG, "setSearchQuery called: '$newQuery' (was: '$searchQuery')")
+        if (searchQuery != newQuery) {
+            searchQuery = newQuery
+            applyFilter()
+        }
     }
 
     private fun applyFilter() {
+        val previousSize = filteredAppList.size
         filteredAppList = if (searchQuery.isEmpty()) {
             appList.toMutableList()
         } else {
@@ -47,7 +57,17 @@ class AppExclusionAdapter : RecyclerView.Adapter<AppExclusionAdapter.ViewHolder>
                         app.packageName.lowercase().contains(searchQuery)
             }.toMutableList()
         }
-        notifyDataSetChanged()
+
+        Log.d(TAG, "applyFilter: query='$searchQuery', total=${appList.size}, filtered=${filteredAppList.size}")
+
+        // 使用更精确的通知方法
+        if (previousSize == 0 && filteredAppList.isNotEmpty()) {
+            notifyItemRangeInserted(0, filteredAppList.size)
+        } else if (filteredAppList.isEmpty() && previousSize > 0) {
+            notifyItemRangeRemoved(0, previousSize)
+        } else {
+            notifyDataSetChanged()
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -78,6 +98,9 @@ class AppExclusionAdapter : RecyclerView.Adapter<AppExclusionAdapter.ViewHolder>
             checkBox.setOnCheckedChangeListener { _, isChecked ->
                 app.isExcluded = isChecked
                 listener?.onAppExclusionChanged(app.packageName, isChecked)
+                // 更新appList中的对应项
+                val originalApp = appList.find { it.packageName == app.packageName }
+                originalApp?.isExcluded = isChecked
                 // 重新排序
                 setAppList(appList)
             }

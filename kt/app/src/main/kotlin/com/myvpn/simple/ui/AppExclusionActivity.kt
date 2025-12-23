@@ -5,10 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
@@ -27,6 +30,10 @@ import java.util.concurrent.Executors
 
 class AppExclusionActivity : AppCompatActivity(),
     AppExclusionAdapter.OnAppExclusionChangeListener {
+
+    companion object {
+        private const val TAG = "AppExclusionActivity"
+    }
 
     private lateinit var spinnerMode: Spinner
     private lateinit var textModeDescription: TextView
@@ -94,7 +101,10 @@ class AppExclusionActivity : AppCompatActivity(),
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                adapter.setSearchQuery(s?.toString() ?: "")
+                // 使用 post 确保在主线程上执行
+                editSearch.post {
+                    adapter.setSearchQuery(s?.toString() ?: "")
+                }
             }
 
             override fun afterTextChanged(s: Editable?) {}
@@ -102,7 +112,12 @@ class AppExclusionActivity : AppCompatActivity(),
     }
 
     private fun setupUI() {
-        val manager = appExclusionManager ?: return
+        val manager = appExclusionManager
+        if (manager == null) {
+            Log.e(TAG, "setupUI: appExclusionManager is null!")
+            return
+        }
+        Log.d(TAG, "setupUI: Starting UI setup")
 
         // 设置模式选择器
         val modes = arrayOf("排除模式 (默认所有走代理)", "允许模式 (默认所有不走代理)")
@@ -144,6 +159,7 @@ class AppExclusionActivity : AppCompatActivity(),
     }
 
     private fun loadAppList() {
+        Log.d(TAG, "loadAppList: Starting to load app list")
         progressBar.visibility = View.VISIBLE
         recyclerView.visibility = View.GONE
 
@@ -151,9 +167,19 @@ class AppExclusionActivity : AppCompatActivity(),
             val apps = mutableListOf<AppInfo>()
             val pm = packageManager
             val excludedApps = appExclusionManager?.excludedApps ?: emptySet()
+            Log.d(TAG, "loadAppList: excludedApps size = ${excludedApps.size}")
 
             try {
-                val packages = pm.getInstalledPackages(0)
+                val packages = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    Log.d(TAG, "loadAppList: Using new API (SDK ${Build.VERSION.SDK_INT})")
+                    pm.getInstalledPackages(PackageManager.PackageInfoFlags.of(0))
+                } else {
+                    Log.d(TAG, "loadAppList: Using old API (SDK ${Build.VERSION.SDK_INT})")
+                    @Suppress("DEPRECATION")
+                    pm.getInstalledPackages(0)
+                }
+                Log.d(TAG, "loadAppList: Got ${packages.size} packages from PackageManager")
+
                 for (packageInfo in packages) {
                     val appInfo = packageInfo.applicationInfo
 
@@ -177,15 +203,18 @@ class AppExclusionActivity : AppCompatActivity(),
                     )
                 }
             } catch (e: Exception) {
+                Log.e(TAG, "loadAppList: Error loading packages", e)
                 e.printStackTrace()
             }
 
             allApps = apps
+            Log.d(TAG, "loadAppList: Loaded ${apps.size} apps on Android ${Build.VERSION.SDK_INT}")
 
             runOnUiThread {
                 adapter.setAppList(allApps)
                 progressBar.visibility = View.GONE
                 recyclerView.visibility = View.VISIBLE
+                Log.d(TAG, "App list set to adapter")
             }
         }
     }

@@ -7,7 +7,6 @@ import android.content.ServiceConnection
 import android.net.VpnService
 import android.os.Bundle
 import android.os.IBinder
-import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -15,13 +14,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.navigation.NavigationView
 import com.myvpn.simple.database.NodeDatabase
 import com.myvpn.simple.database.Subscription
 import com.myvpn.simple.database.SubscriptionDao
@@ -33,8 +29,6 @@ import com.myvpn.simple.utils.SubscriptionDownloader
 class SubscriptionActivity : AppCompatActivity(),
     SubscriptionAdapter.OnSubscriptionActionListener {
 
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var navigationView: NavigationView
     private lateinit var rvSubscriptions: RecyclerView
     private lateinit var tvEmptyHint: TextView
     private lateinit var tvFilterHint: TextView
@@ -99,8 +93,6 @@ class SubscriptionActivity : AppCompatActivity(),
     }
 
     private fun initViews() {
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navigationView = findViewById(R.id.nav_view)
         rvSubscriptions = findViewById(R.id.rv_subscriptions)
         tvEmptyHint = findViewById(R.id.tv_empty_hint)
         tvFilterHint = findViewById(R.id.tv_filter_hint)
@@ -108,18 +100,6 @@ class SubscriptionActivity : AppCompatActivity(),
         btnAddSubscription = findViewById(R.id.btn_add_subscription)
         btnTestLatency = findViewById(R.id.btn_test_latency)
         fabConnect = findViewById(R.id.fab_connect)
-
-        // 设置工具栏
-        findViewById<MaterialToolbar>(R.id.toolbar).setNavigationOnClickListener {
-            drawerLayout.openDrawer(GravityCompat.START)
-        }
-
-        // 设置导航菜单点击监听
-        navigationView.setNavigationItemSelectedListener { menuItem ->
-            handleNavigationItemSelected(menuItem)
-            drawerLayout.closeDrawer(GravityCompat.START)
-            true
-        }
 
         btnAddSubscription.setOnClickListener { showAddSubscriptionDialog() }
         btnTestLatency.setOnClickListener { testAllNodesLatency() }
@@ -161,7 +141,6 @@ class SubscriptionActivity : AppCompatActivity(),
 
             runOnUiThread {
                 allSubscriptions = subscriptions
-                updateNavigationMenu(subscriptions)
 
                 if (!isShowingNodes) {
                     subscriptionAdapter.setSubscriptions(subscriptions)
@@ -169,42 +148,6 @@ class SubscriptionActivity : AppCompatActivity(),
                 }
             }
         }.start()
-    }
-
-    private fun updateNavigationMenu(subscriptions: List<Subscription>) {
-        val menu = navigationView.menu
-        menu.clear()
-
-        // 添加"显示所有订阅"选项
-        menu.add(0, R.id.nav_all_subscriptions, 0, "显示所有订阅")
-            .setIcon(android.R.drawable.ic_menu_view)
-            .isCheckable = true
-
-        // 动态添加订阅项
-        subscriptions.forEachIndexed { index, subscription ->
-            menu.add(0, index + 1000, index + 1, subscription.name)
-                .setIcon(android.R.drawable.ic_menu_agenda)
-                .isCheckable = true
-        }
-
-        // 默认选中"显示所有订阅"
-        menu.setGroupCheckable(0, true, true)
-        menu.findItem(R.id.nav_all_subscriptions)?.isChecked = true
-    }
-
-    private fun handleNavigationItemSelected(menuItem: MenuItem) {
-        when (menuItem.itemId) {
-            R.id.nav_all_subscriptions -> {
-                showAllSubscriptions()
-            }
-            else -> {
-                // 订阅项，ID为 1000 + index
-                val index = menuItem.itemId - 1000
-                if (index >= 0 && index < allSubscriptions.size) {
-                    showSubscriptionNodes(allSubscriptions[index])
-                }
-            }
-        }
     }
 
     private fun showAllSubscriptions() {
@@ -600,9 +543,6 @@ class SubscriptionActivity : AppCompatActivity(),
 
     override fun onBackPressed() {
         when {
-            drawerLayout.isDrawerOpen(GravityCompat.START) -> {
-                drawerLayout.closeDrawer(GravityCompat.START)
-            }
             isShowingNodes -> {
                 showAllSubscriptions()
             }

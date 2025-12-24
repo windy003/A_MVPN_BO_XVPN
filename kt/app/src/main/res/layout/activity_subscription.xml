@@ -1,113 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 主内容区域 -->
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                android:title="订阅管理"
-                android:titleTextColor="@android:color/white"
-                android:navigationIcon="@drawable/ic_menu" />
-
-            <Button
-                android:id="@+id/btn_add_subscription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:text="添加订阅"
-                android:backgroundTint="@color/purple_500" />
-
-            <TextView
-                android:id="@+id/tv_filter_hint"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="显示所有订阅"
-                android:gravity="center"
-                android:padding="8dp"
-                android:textSize="14sp"
-                android:textColor="@color/purple_700"
-                android:background="#F0F0F0"
-                android:visibility="gone" />
-
-            <Button
-                android:id="@+id/btn_test_latency"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="8dp"
-                android:text="测试所有节点延迟"
-                android:textSize="14sp"
-                android:backgroundTint="@color/purple_700"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/tv_test_progress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="正在测试延迟..."
-                android:gravity="center"
-                android:padding="8dp"
-                android:textSize="12sp"
-                android:textColor="@color/purple_500"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/tv_empty_hint"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="暂无订阅，请添加订阅"
-                android:gravity="center"
-                android:padding="32dp"
-                android:textSize="16sp"
-                android:textColor="@color/purple_700"
-                android:visibility="gone" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_subscriptions"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-        </LinearLayout>
-
-        <!-- 悬浮连接按钮 -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_connect"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="16dp"
-            android:src="@android:drawable/ic_media_play"
-            android:contentDescription="连接节点"
-            android:visibility="gone"
-            app:backgroundTint="@color/purple_500"
-            app:tint="@android:color/white" />
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-    <!-- 导航抽屉 -->
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        app:headerLayout="@layout/nav_header_subscription"
-        app:menu="@menu/drawer_subscription_menu" />
+        android:orientation="vertical">
 
-</androidx.drawerlayout.widget.DrawerLayout>
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:title="订阅管理"
+            android:titleTextColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/btn_add_subscription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="添加订阅"
+            android:backgroundTint="@color/purple_500" />
+
+        <TextView
+            android:id="@+id/tv_filter_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="显示所有订阅"
+            android:gravity="center"
+            android:padding="8dp"
+            android:textSize="14sp"
+            android:textColor="@color/purple_700"
+            android:background="#F0F0F0"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btn_test_latency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:text="测试所有节点延迟"
+            android:textSize="14sp"
+            android:backgroundTint="@color/purple_700"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_test_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="正在测试延迟..."
+            android:gravity="center"
+            android:padding="8dp"
+            android:textSize="12sp"
+            android:textColor="@color/purple_500"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_empty_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="暂无订阅，请添加订阅"
+            android:gravity="center"
+            android:padding="32dp"
+            android:textSize="16sp"
+            android:textColor="@color/purple_700"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_subscriptions"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <!-- 悬浮连接按钮 -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_connect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@android:drawable/ic_media_play"
+        android:contentDescription="连接节点"
+        android:visibility="gone"
+        app:backgroundTint="@color/purple_500"
+        app:tint="@android:color/white" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -47,8 +47,10 @@ data class XrayConfig(
     )
 
     data class RoutingRule(
-        var type: String = "",
+        var type: String = "field",
         var outboundTag: String = "",
-        var network: String = ""
+        var network: String? = null,
+        var ip: List<String>? = null,
+        var domain: List<String>? = null
     )
 }

@@ -328,6 +328,25 @@ class SimpleVPNService : XiVPNService() {
         // 创建路由规则
         val routing = XrayConfig.Routing(
             rules = listOf(
+                // 局域网直连规则 - 必须放在最前面
+                XrayConfig.RoutingRule(
+                    type = "field",
+                    outboundTag = "direct",
+                    ip = listOf(
+                        "10.0.0.0/8",      // 私有网络A类
+                        "172.16.0.0/12",   // 私有网络B类
+                        "192.168.0.0/16",  // 私有网络C类
+                        "169.254.0.0/16",  // 链路本地地址
+                        "127.0.0.0/8",     // 回环地址
+                        "224.0.0.0/4",     // 多播地址
+                        "240.0.0.0/4",     // E类地址
+                        "255.255.255.255/32", // 广播地址
+                        "fc00::/7",        // IPv6唯一本地地址
+                        "fe80::/10",       // IPv6链路本地地址
+                        "::1/128"          // IPv6回环地址
+                    )
+                ),
+                // 其他流量走代理
                 XrayConfig.RoutingRule(
                     type = "field",
                     outboundTag = "proxy",

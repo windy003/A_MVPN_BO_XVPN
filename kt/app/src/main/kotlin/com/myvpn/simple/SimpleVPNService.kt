@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ServiceInfo
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
@@ -82,7 +83,15 @@ class SimpleVPNService : XiVPNService() {
                 "CONNECT" -> {
                     // Android 8.0+ 使用 startForegroundService 时必须立即显示通知
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        startForeground(NOTIFICATION_ID, createNotification("VPN正在连接..."))
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                            startForeground(
+                                NOTIFICATION_ID,
+                                createNotification("VPN正在连接..."),
+                                ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
+                            )
+                        } else {
+                            startForeground(NOTIFICATION_ID, createNotification("VPN正在连接..."))
+                        }
                     }
 
                     val config = it.getSerializableExtra("config") as? TrojanConfig
@@ -101,7 +110,15 @@ class SimpleVPNService : XiVPNService() {
 
                     // 断开连接时也需要显示通知（如果是前台服务）
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        startForeground(NOTIFICATION_ID, createNotification("VPN正在断开..."))
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                            startForeground(
+                                NOTIFICATION_ID,
+                                createNotification("VPN正在断开..."),
+                                ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
+                            )
+                        } else {
+                            startForeground(NOTIFICATION_ID, createNotification("VPN正在断开..."))
+                        }
                     }
                     stopVPN()
                 }
@@ -208,7 +225,15 @@ class SimpleVPNService : XiVPNService() {
                 return false
             }
 
-            startForeground(NOTIFICATION_ID, createNotification("VPN已连接"))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                startForeground(
+                    NOTIFICATION_ID,
+                    createNotification("VPN已连接"),
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
+                )
+            } else {
+                startForeground(NOTIFICATION_ID, createNotification("VPN已连接"))
+            }
 
             true
         } catch (e: Exception) {

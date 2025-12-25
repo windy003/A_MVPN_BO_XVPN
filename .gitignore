@@ -1,5 +1,6 @@
-.claude
-kt/.gradle
-kt/.idea
-kt/app/build
-kt/build
+kt-my-aar/
+Xray-core-main/
+.claude/
+kt/.gradle/
+kt/.idea/
+kt/app/build/
